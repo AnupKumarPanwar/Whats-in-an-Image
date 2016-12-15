@@ -116,14 +116,44 @@ function make_thumb($src, $dest)
 
 
 
-	$url = 'https://api.clarifai.com/v1/tag/';
-	$data = array('url' => 'http://hashbnm.16mb.com/thumb/'.$dest);
+
+
+	$url = 'https://api.clarifai.com/v1/token/';
+	$data = array('grant_type' => 'client_credentials',
+		'client_id' => 'R5uIa5cJDMNfIc266TmC2ElDbgtoVSSqOFZUPJvv',
+		'client_secret' => 'lOFtjtdZnoBYzAUrfBvdUlkzZ3yQGPmKU7TFtFYo'
+		);
 
 	// use key 'http' even if you send the request to https://...
 	$options = array(
 	    'http' => array(
 	        'header'  => "Content-Type: application/x-www-form-urlencoded\r\n".
-	        				"Authorization : Bearer sdNsvr5VUYsxJfBYy8p92AFKbtGP9l",
+	        				"Authorization : Bearer tD0qUbgqOSH6CwVTKwi9IJPVvYQTV8",
+	        'method'  => 'POST',
+	        'content' => http_build_query($data, PHP_QUERY_RFC1738)
+	    )
+	);
+	$context  = stream_context_create($options);
+	$result =json_decode(file_get_contents($url, false, $context));
+
+
+	$accessToken=$result->access_token;
+
+
+
+
+
+
+
+
+	$url = 'https://api.clarifai.com/v1/tag/';
+	$data = array('url' => 'http://hashbnm.16.com/thumb/'.$dest);
+
+	// use key 'http' even if you send the request to https://...
+	$options = array(
+	    'http' => array(
+	        'header'  => "Content-Type: application/x-www-form-urlencoded\r\n".
+	        				"Authorization : Bearer ".$accessToken,
 	        'method'  => 'POST',
 	        'content' => http_build_query($data, PHP_QUERY_RFC1738)
 	    )
@@ -134,6 +164,8 @@ function make_thumb($src, $dest)
 
 
 	$response=json_decode($result);
+
+
 
 
 
@@ -299,9 +331,12 @@ $duck=null;
 
 
 				$done=str_replace("\n", "\\n", $dudu->$dada->extract);
+				$done=str_replace("\"", " ", $done);
+
+				// $done=addslashes($done);
 
 
-		  		echo '{"result":[{"success" : "1", "data": {"nameofobject":"'.$similarPostsArrayUniqueFinal[$arrayindex]['nameofobject'].'", "imageUrl":"'.$similarPostsArrayUniqueFinal[$arrayindex]['imageUrl'].'" , "description" : "'.$done.'"}}]}';
+		  		echo '{"result":[{"success" : "1", "nameofobject":"'.$similarPostsArrayUniqueFinal[$arrayindex]['nameofobject'].'", "imageUrl":"'.$similarPostsArrayUniqueFinal[$arrayindex]['imageUrl'].'" , "description" : "'.$done.'"}]}';
 		}
 		else
 		{
